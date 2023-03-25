@@ -6,7 +6,7 @@ import orderModel from "../models/orderModel.js"
 export const registerController = async (req, res) => {
 
     try {
-        const { name, email, password, phone, address, answer } = req.body
+        const { name, email, password, phone, address, city, state, pin, answer } = req.body
         //validations
         if (!name) {
             return res.send({ message: "name is Required" })
@@ -22,6 +22,15 @@ export const registerController = async (req, res) => {
         }
         if (!address) {
             return res.send({ message: "address is Required" })
+        }
+        if (!city) {
+            return res.send({ message: "city is Required" })
+        }
+        if (!state) {
+            return res.send({ message: "state is Required" })
+        }
+        if (!pin) {
+            return res.send({ message: "Pin code is Required" })
         }
         if (!answer) {
             return res.send({ message: "Answer is Required" })
@@ -40,7 +49,7 @@ export const registerController = async (req, res) => {
         const hashedPassword = await hashPassword(password)
 
         //save
-        const user = await new userModel({ name, email, phone, address, password: hashedPassword, answer }).save()
+        const user = await new userModel({ name, email, phone, address, city, state, pin, password: hashedPassword, answer }).save()
         res.status(201).send({
             success: true,
             message: 'User Register Successfully',
@@ -159,7 +168,7 @@ export const testController = (req, res) => {
 //update profile
 export const updateProfileController = async (req, res) => {
     try {
-        const { name, email, password, address, phone } = req.body
+        const { name, email, password, address, city, state, pin, phone } = req.body
         const user = await userModel.findById(req.user._id)
 
         //password
@@ -172,6 +181,9 @@ export const updateProfileController = async (req, res) => {
             password: hashedPassword || user.password,
             phone: phone || user.phone,
             address: address || user.address,
+            city: city || user.city,
+            state: state || user.state,
+            pin: pin || user.pin,
         }, { new: true })
         res.status(200).send({
             success: true,
